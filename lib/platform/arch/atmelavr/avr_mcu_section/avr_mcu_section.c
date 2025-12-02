@@ -1,3 +1,4 @@
+#ifdef ARDUINO_ARCH_AVR
 #include <Arduino.h>
 #include "avr_mcu_section.h"
 
@@ -14,3 +15,4 @@ const struct avr_mmcu_vcd_trace_t _mytrace[]  _MMCU_ = {
 //  { AVR_MCU_VCD_SRAM_16("Stack"), .what = (void*) &SP, },
 //  { AVR_MCU_VCD_SRAM_16("Heap"), .what = (void*)(&__brkval), },
 };
+#endif // ARDUINO_ARCH_AVR

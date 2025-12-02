@@ -1,6 +1,7 @@
+#ifdef ARDUINO_ARCH_RENESAS
 #include "platform.h"
-#include "hal_packetserial.h"
-#include "i2c.h"
+#include "../../../common/packetSerial/hal_packetserial.h"
+#include "../i2c/i2c.h"
 
 namespace hardwareAbstraction {
 
@@ -42,3 +43,4 @@ namespace hardwareAbstraction {
         ::attachInterrupt(digitalPinToInterrupt(interruptNum), userFunc, (::PinStatus) (mode+1));
     }
 } // hardwareAbstraction
+#endif // ARDUINO_ARCH_RENESAS

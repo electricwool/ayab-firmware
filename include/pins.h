@@ -1,12 +1,14 @@
-#ifndef SHIELD_H
-#define SHIELD_H
+// Pin definitions wrapper
+// This file provides a compatibility layer between the old Shield:: namespace
+// and the new auto-generated pin_definitions.h
 
-#include <stdint.h>
+#ifndef PINS_H
+#define PINS_H
+
 #include "pin_definitions.h"
 
+// Maintain backward compatibility with Shield namespace
 namespace Shield {
-
-    // LEDs
     struct Leds {
         static constexpr uint8_t LED_A_PIN = ::LED_A_PIN;
         static constexpr uint8_t LED_B_PIN = ::LED_B_PIN;
@@ -15,30 +17,21 @@ namespace Shield {
         #endif
     };
 
-    // Piezo
     struct Piezo {
         static constexpr uint8_t PIEZO_PIN = ::PIEZO_PIN;
     };
 
-    // Encoder
     struct Encoder {
         static constexpr uint8_t ENC_A_PIN = ::ENC_A_PIN;
         static constexpr uint8_t ENC_B_PIN = ::ENC_B_PIN;
         static constexpr uint8_t ENC_C_PIN = ::ENC_C_PIN;
     };
 
-    // Hall detectors
     struct HallDetectors {
         static constexpr uint8_t EOL_R_PIN = ::EOL_R_PIN;
         static constexpr uint8_t EOL_L_PIN = ::EOL_L_PIN;
-        
-        #ifdef EOL_R_L_PIN
         static constexpr uint8_t EOL_R_L_PIN = ::EOL_R_L_PIN;
-        #endif
-        
-        #ifdef EOL_R_DETECT_PIN
         static constexpr uint8_t EOL_R_DETECT_PIN = ::EOL_R_DETECT_PIN;
-        #endif
         
         #ifdef EOL_PIN_R_N
         static constexpr uint8_t EOL_PIN_R_N = ::EOL_PIN_R_N;
@@ -48,8 +41,8 @@ namespace Shield {
         #endif
     };
 
-    // Additional board-specific pin definitions for ESP32
-    #if defined(ARDUINO_ESP32)
+    // ESP32-specific pins
+    #ifdef ARDUINO_ESP32
         static constexpr uint8_t MCP23017_ADDR_0 = ::MCP23017_ADDR_0;
         static constexpr uint8_t MCP_SDA_PIN = ::MCP_SDA_PIN;
         static constexpr uint8_t MCP_SCL_PIN = ::MCP_SCL_PIN;
@@ -72,11 +65,10 @@ namespace Shield {
         static constexpr uint8_t USER_PIN_42 = ::USER_PIN_42;
     #endif
 
-    // GPIO expanders
     namespace GpioExpanders {
-        // I2C addresses declaration, ends with a sentinel row {0, 0}.
+        // I2C addresses declaration
         extern const uint8_t I2C_ADDRESSES[][2];
     };
-
 };
-#endif // SHIELD_H
+
+#endif // PINS_H

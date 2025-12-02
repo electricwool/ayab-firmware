@@ -1,0 +1,168 @@
+{
+  "uno": {
+    "I2C_HARDWARE": 1,
+    "LED_A_PIN": 5,          // optional
+    "LED_B_PIN": 6,          // optional
+    "PIEZO_PIN": 9,          // optional
+    "ENC_A_PIN": 2,
+    "ENC_B_PIN": 3,
+    "ENC_C_PIN": 4,
+    "EOL_SENSORS": {
+      "SIMPLE": {
+        "EOL_R_PIN": 14,
+        "EOL_L_PIN": 15,
+        "EOL_R_L_PIN": 7,
+        "EOL_R_DETECT_PIN": 8
+      },
+      "DUAL": {
+        "EOL_PIN_R_N": 14,
+        "EOL_PIN_R_S": 15,
+        "EOL_PIN_L_N": 15,
+        "EOL_PIN_L_S": 14
+      }
+    },
+    "SDA_PORT": "PORTC",
+    "SDA_PIN": 4,
+    "SCL_PORT": "PORTC",
+    "SCL_PIN": 5
+  },
+  "mega2560": {
+    "LED_A_PIN": 5,          // optional
+    "LED_B_PIN": 6,          // optional
+    "PIEZO_PIN": 9,          // optional
+    "ENC_A_PIN": 2,
+    "ENC_B_PIN": 3,
+    "ENC_C_PIN": 4,
+    "EOL_SENSORS": {
+      "SIMPLE": {
+        "EOL_R_PIN": 54,
+        "EOL_L_PIN": 55,
+        "EOL_R_L_PIN": 7,
+        "EOL_R_DETECT_PIN": 8
+      },
+      "DUAL": {
+        "EOL_PIN_R_N": 54,
+        "EOL_PIN_R_S": 55,
+        "EOL_PIN_L_N": 55,
+        "EOL_PIN_L_S": 54
+      }
+    },
+    "SDA_PORT": "PORTF",
+    "SDA_PIN": 4,
+    "SCL_PORT": "PORTF",
+    "SCL_PIN": 5,
+    "WS2812": 0              // optional
+  },
+  "uno_r4_wifi": {
+    "LED_A_PIN": 5,          // optional
+    "LED_B_PIN": 6,          // optional
+    "PIEZO_PIN": 9,          // optional
+    "ENC_A_PIN": 2,
+    "ENC_B_PIN": 3,
+    "ENC_C_PIN": 4,
+    "EOL_SENSORS": {
+      "SIMPLE": {
+        "EOL_R_PIN": 14,
+        "EOL_L_PIN": 15,
+        "EOL_R_L_PIN": 7,
+        "EOL_R_DETECT_PIN": 8
+      },
+      "DUAL": {
+        "EOL_PIN_R_N": 14,
+        "EOL_PIN_R_S": 15,
+        "EOL_PIN_L_N": 15,
+        "EOL_PIN_L_S": 14
+      }
+    },
+    "WS2812": 0              // optional
+  },
+  "ESP32-S3-DevKitC-1": {
+    "LED_A_PIN": 33,         // optional
+    "LED_B_PIN": 34,         // optional
+    "LED_C_PIN": 35,         // optional
+    "PIEZO_PIN": 38,         // optional
+    "ENC_A_PIN": 5,
+    "ENC_B_PIN": 6,
+    "ENC_C_PIN": 7,
+    "EOL_SENSORS": {
+      "SIMPLE": {
+        "EOL_R_PIN": null,
+        "EOL_L_PIN": null,
+        "EOL_R_L_PIN": null,
+        "EOL_R_DETECT_PIN": null
+      },
+      "DUAL": {
+        "EOL_PIN_R_N": 3,
+        "EOL_PIN_R_S": 4,
+        "EOL_PIN_L_N": 1,
+        "EOL_PIN_L_S": 2
+      }
+    },
+    "MCP23017_ADDR_0": 0,
+    "MCP_SDA_PIN": 8,
+    "MCP_SCL_PIN": 9,
+    "I2C_PIN_SDA": 15,       // optional
+    "I2C_PIN_SCL": 16,       // optional
+    "SPI_PIN_COPI": 12,      // optional
+    "SPI_PIN_CIPO": 11,      // optional
+    "SPI_PIN_SCK": 13,       // optional
+    "SPI_PIN_CS": 10,        // optional
+    "UART_PIN_TX": 43,       // optional
+    "UART_PIN_RX": 44,       // optional
+    "USER_BUTTON": 36,       // optional
+    "USER_PIN_14": 14,       // optional
+    "USER_PIN_17": 17,       // optional
+    "USER_PIN_18": 18,       // optional
+    "USER_PIN_21": 21,       // optional
+    "USER_PIN_39": 39,       // optional
+    "USER_PIN_40": 40,       // optional
+    "USER_PIN_41": 41,       // optional
+    "USER_PIN_42": 42,       // optional
+    "WS2812": 1,             // optional
+    "WS2812_DATA_PIN": 48    // optional
+  },
+  "esp32-s3-mini-1": {
+    "LED_A_PIN": 33,         // optional
+    "LED_B_PIN": 34,         // optional
+    "LED_C_PIN": 35,         // optional
+    "PIEZO_PIN": 38,         // optional
+    "ENC_A_PIN": 5,
+    "ENC_B_PIN": 6,
+    "ENC_C_PIN": 7,
+    "EOL_SENSORS": {
+      "SIMPLE": {
+        "EOL_R_PIN": null,
+        "EOL_L_PIN": null,
+        "EOL_R_L_PIN": null,
+        "EOL_R_DETECT_PIN": null
+      },
+      "DUAL": {
+        "EOL_PIN_R_N": 3,
+        "EOL_PIN_R_S": 4,
+        "EOL_PIN_L_N": 1,
+        "EOL_PIN_L_S": 2
+      }
+    },
+    "MCP23017_ADDR_0": 0,
+    "MCP_SDA_PIN": 8,
+    "MCP_SCL_PIN": 9,
+    "I2C_PIN_SDA": 15,       // optional
+    "I2C_PIN_SCL": 16,       // optional
+    "SPI_PIN_COPI": 12,      // optional
+    "SPI_PIN_CIPO": 11,      // optional
+    "SPI_PIN_SCK": 13,       // optional
+    "SPI_PIN_CS": 10,        // optional
+    "UART_PIN_TX": 43,       // optional
+    "UART_PIN_RX": 44,       // optional
+    "USER_BUTTON": 36,       // optional
+    "USER_PIN_14": 14,       // optional
+    "USER_PIN_17": 17,       // optional
+    "USER_PIN_18": 18,       // optional
+    "USER_PIN_21": 21,       // optional
+    "USER_PIN_39": 39,       // optional
+    "USER_PIN_40": 40,       // optional
+    "USER_PIN_41": 41,       // optional
+    "USER_PIN_42": 42,       // optional
+    "WS2812": 0              // optional
+  }
+}

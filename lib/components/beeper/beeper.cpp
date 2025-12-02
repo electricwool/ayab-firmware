@@ -10,17 +10,29 @@ Beeper::Beeper(hardwareAbstraction::HalInterface *hal, uint8_t pin) {
   _pin = pin;
   _state = State::Idle;
   _enabled = true;
+  _noPinMode = false;
 
   _off();
   _hal->pinMode(_pin, OUTPUT);
 }
 
+// No-op constructor for when no piezo pin is available
+Beeper::Beeper(hardwareAbstraction::HalInterface *hal) {
+  _hal = hal;
+  _pin = 0;
+  _state = State::Idle;
+  _enabled = false;
+  _noPinMode = true;
+}
+
 // TODO: Verify if PWM is really required vs simple on/off for all HW
 void Beeper::_on() {
+  if (_noPinMode) return;
   _hal->analogWrite(_pin, BEEP_VALUE_ON);
 }
 
 void Beeper::_off() {
+  if (_noPinMode) return;
 // WA: UNO R4 analogWrite generates a 255/256 PWM signal iso 255/255=HIGH
 #if defined(ARDUINO_UNOR4_WIFI) || defined(ARDUINO_UNOR4_MINIMA)
   _hal->pinMode(_pin, OUTPUT);
@@ -42,6 +54,8 @@ void Beeper::config(bool beeperEnabled) { _enabled = beeperEnabled; }
 bool Beeper::busy() { return _state != State::Idle; }
 
 void Beeper::schedule() {
+  if (_noPinMode) return;
+  
   switch (_state) {
     case State::On:
       _on();

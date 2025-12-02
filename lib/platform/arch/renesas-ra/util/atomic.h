@@ -17,6 +17,8 @@
 * >>- Dean 
 */
 
+#include <stdint.h>
+
 #ifdef __arm__ 
 #ifndef _CORTEX_M3_ATOMIC_H_
 #define _CORTEX_M3_ATOMIC_H_

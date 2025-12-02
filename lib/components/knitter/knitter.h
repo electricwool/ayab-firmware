@@ -4,12 +4,16 @@
 #include "beeper.h"
 #include "carriage.h"
 #include "encoder.h"
+#include <Arduino.h>
 #include "hal.h"
 #include "hallsensor.h"
 #include "led.h"
 #include "line.h"
 #include "machine.h"
 #include "solenoids.h"
+
+// Forward declaration for dual hall sensor
+class DualHallSensor;
 
 #define BEEPER_INIT 3
 #define BEEPER_CARRIAGE 2
@@ -85,6 +89,7 @@ class Knitter : protected API {
   Beeper *_beeper;
   Encoder *_encoder;
   HallSensor *_hall_left, *_hall_right;
+  DualHallSensor *_dualHallSensor;  // Used when USE_DUAL_HALL_SENSOR is defined
   Led *_led_a, *_led_b;
   Solenoids *_solenoids;
 

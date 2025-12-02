@@ -1,6 +1,7 @@
 #ifndef MCP23008_H
 #define MCP23008_H
 
+#include <Arduino.h>
 #include "hal.h"
 #include "../gpio_expander/gpio_expander.h"
 

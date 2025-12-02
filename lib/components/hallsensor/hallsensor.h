@@ -3,6 +3,7 @@
 
 #include "api.h"
 #include "encoder.h"
+#include <Arduino.h>
 #include "hal.h"
 
 // No pin indication

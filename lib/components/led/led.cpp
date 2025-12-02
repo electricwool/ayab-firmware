@@ -1,4 +1,8 @@
 #include "led.h"
+#if defined(ARDUINO_ESP32) && defined(USE_WS2812_STATUS_LED)
+#include "../../platform/common/shield/shield.h"
+#include "../../devices/ws2812/ws2812_status.h"
+#endif
 
 Led::Led(hardwareAbstraction::HalInterface *hal, uint8_t pin)
     : Led(hal, pin, LOW, HIGH) {}
@@ -14,6 +18,24 @@ Led::Led(hardwareAbstraction::HalInterface *hal, uint8_t pin, uint8_t offValue, 
 }
 
 void Led::_write() {
+#if defined(ARDUINO_ESP32) && defined(USE_WS2812_STATUS_LED)
+  // Intercept writes for the three logical indicator LEDs and redirect
+  // to the WS2812 status LED manager as RGB channels.
+  auto set_channel = [&](uint8_t idx) {
+    ws2812_status_ensure_init();
+    bool on = (_state == State::On);
+    ws2812_status_set_channel(idx, on);
+  };
+  #ifdef LED_A_PIN
+  if (_pin == Shield::Leds::LED_A_PIN) { set_channel(0); _lasttime = _hal->millis(); return; }
+  #endif
+  #ifdef LED_B_PIN
+  if (_pin == Shield::Leds::LED_B_PIN) { set_channel(1); _lasttime = _hal->millis(); return; }
+  #endif
+  #ifdef LED_C_PIN
+  if (_pin == Shield::Leds::LED_C_PIN) { set_channel(2); _lasttime = _hal->millis(); return; }
+  #endif
+#endif
   if (_state == State::Off)
     _hal->digitalWrite(_pin, _offValue);
   else

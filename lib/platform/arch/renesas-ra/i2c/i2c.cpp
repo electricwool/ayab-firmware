@@ -1,9 +1,16 @@
 #include <Wire.h>
 #include "i2c.h"
+#include "pin_definitions.h"
 
 namespace hardwareAbstraction {
 
-I2c::I2c() { ::Wire.begin(); }
+I2c::I2c() {
+#if defined(I2C_PIN_SDA) && defined(I2C_PIN_SCL)
+  ::Wire.begin(I2C_PIN_SDA, I2C_PIN_SCL);
+#else
+  ::Wire.begin();
+#endif
+}
 
 bool I2c::detect(uint8_t device) {
   ::Wire.beginTransmission(device);

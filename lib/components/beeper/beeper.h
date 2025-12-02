@@ -1,11 +1,13 @@
 #ifndef BEEPER_H
 #define BEEPER_H
 
+#include <Arduino.h>
 #include "hal.h"
 
 class Beeper {
  public:
   Beeper(hardwareAbstraction::HalInterface *hal, uint8_t pin);
+  Beeper(hardwareAbstraction::HalInterface *hal); // No-op constructor when no pin available
   ~Beeper() = default;
 
   void beep(uint8_t number);
@@ -20,6 +22,7 @@ class Beeper {
   uint8_t _pin;
   uint8_t _number;
   bool _enabled;
+  bool _noPinMode; // True when constructed without pin
   State _state, _nextState;
   unsigned long _nextTime;
 

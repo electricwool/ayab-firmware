@@ -3,6 +3,8 @@
 
 #include "hal.h"
 
+#include <Arduino.h>
+#include "hal.h"
 class Led {
  public:
   Led(hardwareAbstraction::HalInterface *hal, uint8_t pin);

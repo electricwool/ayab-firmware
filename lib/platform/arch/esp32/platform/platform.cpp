@@ -1,4 +1,4 @@
-#ifdef ARDUINO_ARCH_AVR
+#ifdef ARDUINO_ESP32
 #include "platform.h"
 #include "../../../common/packetSerial/hal_packetserial.h"
 #include "../i2c/i2c.h"
@@ -7,7 +7,7 @@ namespace hardwareAbstraction {
 
     Platform::Platform() {
         packetSerial = new hardwareAbstraction::PacketSerial();
-        i2c = new hardwareAbstraction::I2c();
+        i2c = new hardwareAbstraction::i2c();
     }
 
     void Platform::pinMode(uint8_t pin, uint8_t mode) {
@@ -39,7 +39,8 @@ namespace hardwareAbstraction {
     }
 
     void Platform::attachInterrupt(uint8_t interruptNum, void (*userFunc)(), int mode) {
-        ::attachInterrupt(digitalPinToInterrupt(interruptNum), userFunc, mode);
+        ::attachInterrupt(interruptNum, userFunc, mode);
     }
+    
 } // hardwareAbstraction
-#endif // ARDUINO_ARCH_AVR
+#endif // ARDUINO_ESP32

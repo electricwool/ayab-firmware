@@ -2,6 +2,7 @@
 #define API_H
 
 #include <stdint.h>
+#include <Arduino.h>
 
 #include "hal.h"
 #include "version.h"

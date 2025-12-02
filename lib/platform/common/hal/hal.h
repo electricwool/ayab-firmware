@@ -4,17 +4,32 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// Ensure Arduino framework macros are visible first on ESP32,
+// then override with HAL's canonical values without redefinition warnings.
+#ifdef ARDUINO_ESP32
+#include <Arduino.h>
+#endif
+
+// For Renesas UNO R4, use framework enums; avoid macro overrides
+#ifndef ARDUINO_ARCH_RENESAS
 // digital pin levels
+#undef LOW
+#undef HIGH
 #define LOW 0x0
 #define HIGH 0x1
 
-// pin mode
+// pin mode - undef first so HAL values take precedence over any framework defines
+#undef INPUT
+#undef OUTPUT
+#undef INPUT_PULLUP
 #define INPUT 0x0
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
 
 // interrupt mode
+#undef CHANGE
 #define CHANGE 1
+#endif // ARDUINO_ARCH_RENESAS
 
 namespace hardwareAbstraction {
 

@@ -1,6 +1,7 @@
 #ifndef SOLENOIDS_H
 #define SOLENOIDS_H
 
+#include <Arduino.h>
 #include "hal.h"
 #include "gpio_expander.h"
 

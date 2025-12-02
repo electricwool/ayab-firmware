@@ -1,5 +1,5 @@
+#include "../../platform/common/atomic.h" //platform agnotic override that provides switching logic for different architectures
 #include "encoder.h"
-#include "atomic.h"
 
 Encoder *encoderInstance;
 void staticInterruptHandler() { encoderInstance->interruptHandler(); }

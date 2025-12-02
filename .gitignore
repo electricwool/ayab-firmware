@@ -4,3 +4,4 @@ python/
 __pycache__/
 *.py[cod]
 include/version.h
+src/CMakeLists.txt
