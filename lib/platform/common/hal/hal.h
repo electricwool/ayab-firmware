@@ -10,8 +10,9 @@
 #include <Arduino.h>
 #endif
 
-// For Renesas UNO R4, use framework enums; avoid macro overrides
-#ifndef ARDUINO_ARCH_RENESAS
+// For Renesas UNO R4 and RP2040 (Arduino Mbed), use framework enums; avoid macro overrides
+// The Arduino Mbed framework uses enums for pin modes and states, which conflict with macros
+#if !defined(ARDUINO_ARCH_RENESAS) && !defined(ARDUINO_ARCH_RP2040)
 // digital pin levels
 #undef LOW
 #undef HIGH
@@ -29,7 +30,7 @@
 // interrupt mode
 #undef CHANGE
 #define CHANGE 1
-#endif // ARDUINO_ARCH_RENESAS
+#endif // !ARDUINO_ARCH_RENESAS && !ARDUINO_ARCH_RP2040
 
 namespace hardwareAbstraction {
 

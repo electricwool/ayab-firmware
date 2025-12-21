@@ -54,53 +54,11 @@
 #elif defined(ARDUINO_ARCH_RENESAS)
   #include "../arch/renesas-ra/util/atomic.h"
 
-// RP2040 - Use Arduino-Pico framework's util/atomic.h
+// RP2040 - Use custom ARM Cortex-M0+ implementation
 #elif defined(ARDUINO_ARCH_RP2040)
-  // Arduino-Pico core provides util/atomic.h compatible with AVR
-  #include <util/atomic.h>
-  
-  // Ensure macros are defined (some RP2040 cores may be incomplete)
-  #ifndef ATOMIC_BLOCK
-    #warning "RP2040 util/atomic.h incomplete, using fallback implementation"
-    // Fallback ARM Cortex-M implementation for RP2040
-    #include <stdint.h>
-    
-    static inline uint32_t __get_PRIMASK(void) {
-      uint32_t result;
-      __asm__ volatile ("MRS %0, primask" : "=r" (result));
-      return result;
-    }
-    
-    static inline void __set_PRIMASK(uint32_t priMask) {
-      __asm__ volatile ("MSR primask, %0" : : "r" (priMask) : "memory");
-    }
-    
-    static inline void __disable_irq(void) {
-      __asm__ volatile ("cpsid i" : : : "memory");
-    }
-    
-    static inline void __enable_irq(void) {
-      __asm__ volatile ("cpsie i" : : : "memory");
-    }
-    
-    #define ATOMIC_BLOCK(type) \
-      for (type, __ToDo = (__disable_irq(), 1); __ToDo; __ToDo = 0)
-    
-    #define ATOMIC_RESTORESTATE \
-      uint32_t primask_save __attribute__((__cleanup__(__restore_primask))) = __get_PRIMASK()
-    
-    #define ATOMIC_FORCEON \
-      uint32_t primask_save __attribute__((__cleanup__(__force_enable))) = 0
-    
-    static inline void __restore_primask(const uint32_t *primask) {
-      __set_PRIMASK(*primask);
-    }
-    
-    static inline void __force_enable(const uint32_t *unused) {
-      (void)unused;
-      __enable_irq();
-    }
-  #endif
+  // Arduino-Mbed core for RP2040 does not provide util/atomic.h
+  // Use our custom implementation for ARM Cortex-M0+
+  #include "../arch/rp2040/util/atomic.h"
 
 // AVR (ATmega328P, ATmega2560) - Use standard util/atomic.h
 #else

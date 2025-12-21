@@ -146,21 +146,21 @@
     "WS2812": 0              // optional
   },
   "rpipicow": {
-    "LED_A_PIN": 2,          // GP2 (optional)
-    "LED_B_PIN": 3,          // GP3 (optional)
+    "LED_A_PIN": null,          // GP2 (optional)
+    "LED_B_PIN": null,          // GP3 (optional)
     "PIEZO_PIN": 10,         // GP10 - BUZZER
     "ENC_A_PIN": 6,          // GP6 (I2C1 SDA)
     "ENC_B_PIN": 5,          // GP5 (I2C0 SCL)
     "ENC_C_PIN": 7,          // GP7 (I2C1 SCL) - was ENC_BP
-    "SDA_PIN": 8,            // GP8 - AYAB_SDA
-    "SCL_PIN": 9,            // GP9 - AYAB_SCL
-    "SPARE": 11,             // GP11 (I2C1 SCL)
+    "MCP_SDA_PIN": 8,            // GP8 - AYAB_SDA
+    "MCP_SCL_PIN": 9,            // GP9 - AYAB_SCL
+    "SPARE": null,             // GP11 (I2C1 SCL)
     "EOL_SENSORS": {
       "SIMPLE": {
-        "EOL_R_PIN": 14,     // GP14 (I2C1 SDA) - EOL_R_P
-        "EOL_L_PIN": 12,     // GP12 (I2C0 SDA) - EOL_L_P
-        "EOL_R_L_PIN": 11,   // GP11 (SPARE)
-        "EOL_R_DETECT_PIN": 15  // GP15 (I2C1 SCL) - EOL_R_N
+        "EOL_R_PIN": null,     // GP14 (I2C1 SDA) - EOL_R_P
+        "EOL_L_PIN": null,     // GP12 (I2C0 SDA) - EOL_L_P
+        "EOL_R_L_PIN": null,   // GP11 (SPARE)
+        "EOL_R_DETECT_PIN": null  // GP15 (I2C1 SCL) - EOL_R_N
       },
       "DUAL": {
         "EOL_PIN_R_N": 15,   // GP15

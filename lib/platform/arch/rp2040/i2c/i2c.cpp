@@ -1,0 +1,50 @@
+#ifdef ARDUINO_ARCH_RP2040
+#include "i2c.h"
+#include <Wire.h>
+
+namespace hardwareAbstraction {
+
+    i2c::i2c() {
+        // RP2040 Wire library initialization
+        // If I2C pins are provided by configuration, use them. Otherwise, use defaults.
+    #if defined(I2C_PIN_SDA) && defined(I2C_PIN_SCL)
+        Wire.setSDA(I2C_PIN_SDA);
+        Wire.setSCL(I2C_PIN_SCL);
+    #endif
+        Wire.begin();
+    }
+
+    bool i2c::detect(uint8_t device) {
+        Wire.beginTransmission(device);
+        uint8_t error = Wire.endTransmission();
+        return (error == 0);
+    }
+
+    uint8_t i2c::read(uint8_t device, uint8_t address) {
+        Wire.beginTransmission(device);
+        Wire.write(address);
+        Wire.endTransmission(false);
+        
+        Wire.requestFrom(static_cast<uint8_t>(device), static_cast<uint8_t>(1));
+        uint8_t value = 0;
+        if (Wire.available()) {
+            value = Wire.read();
+        }
+        return value;
+    }
+
+    void i2c::write(uint8_t device, uint8_t value) {
+        Wire.beginTransmission(device);
+        Wire.write(value);
+        Wire.endTransmission();
+    }
+
+    void i2c::write(uint8_t device, uint8_t address, uint8_t value) {
+        Wire.beginTransmission(device);
+        Wire.write(address);
+        Wire.write(value);
+        Wire.endTransmission();
+    }
+
+} // hardwareAbstraction
+#endif // ARDUINO_ARCH_RP2040

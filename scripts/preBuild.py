@@ -204,7 +204,8 @@ def generate_pin_definitions():
             "UART_PIN_TX", "UART_PIN_RX", "USER_BUTTON",
             "USER_PIN_14", "USER_PIN_17", "USER_PIN_18", "USER_PIN_21",
             "USER_PIN_39", "USER_PIN_40", "USER_PIN_41", "USER_PIN_42",
-            "WS2812", "WS2812_DATA_PIN", "I2C_PIN_SDA", "I2C_PIN_SCL"
+            "WS2812", "WS2812_DATA_PIN", "I2C_PIN_SDA", "I2C_PIN_SCL",
+            "SPARE"
         }
         
         # Check for missing required pins
