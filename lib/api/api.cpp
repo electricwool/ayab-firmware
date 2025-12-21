@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "crc8.h"
+#include "debug.h"
 
 // Single knitter instance allowed (list of pointers to support > 1 handler)
 API *apiInstance;
@@ -17,6 +18,8 @@ API::API(hardwareAbstraction::HalInterface *hal) {
   // Register Rx callback
   apiInstance = this;
   _hal->packetSerial->setPacketHandler(staticRxMessageHandler);
+  
+  DEBUG_PRINTLN("API: Initialized");
 }
 
 void API::schedule() { _hal->packetSerial->schedule(); }
@@ -26,15 +29,21 @@ void API::schedule() { _hal->packetSerial->schedule(); }
 //----------------------------------------------------------------------------
 
 void API::rxMessageHandler(const uint8_t *buffer, size_t size) {
+  DEBUG_PRINT_UINT("API: rxMessageHandler called, size=", size);
+  
   // Ignore empty packet (python's sliplib starts with empty packets)
   if (size == 0) {
+    DEBUG_PRINTLN("API: Empty packet ignored");
     return;
   }
 
+  DEBUG_PRINT_HEX_BYTE("API: Message received, first byte: ", buffer[0]);
+  
   _apiRxTrafficIndication();
   _error = ErrorCode::MessageIncorrectLenght;
   switch ((AYAB_API)buffer[0]) {
     case AYAB_API::requestReset:
+      DEBUG_PRINTLN("API: requestReset");
       // buffer[1] = {crc8}
       if (size == 2) {
         _error = ErrorCode::MessageChecksum;
@@ -82,9 +91,15 @@ void API::rxMessageHandler(const uint8_t *buffer, size_t size) {
       break;
 
     case AYAB_API::requestInfo:
+      DEBUG_PRINTLN("API: requestInfo received");
       // No arguments nor CRC8
       if (size == 1) {
+        DEBUG_PRINTLN("API: Sending confirmInfo");
         _apiConfirmInfo();
+      } else {
+        DEBUG_PRINT("API: requestInfo wrong size: ");
+        DEBUG_PRINT(size);
+        DEBUG_PRINTLN(" (expected 1)");
       }
       _apiRxIndicateState();
       break;
@@ -192,6 +207,17 @@ void API::_apiConfirmInfo() {
   size_t size = sizeof(message);
   strncpy((char *)message + 5, FW_VERSION_SUFFIX, 16);
   message[size - 1] = crc8(message, size - 1);
+  
+  DEBUG_PRINT("API: _apiConfirmInfo - API_VERSION=");
+  DEBUG_PRINT(API_VERSION);
+  DEBUG_PRINT(", FW=");
+  DEBUG_PRINT(FW_VERSION_MAJ);
+  DEBUG_PRINT(".");
+  DEBUG_PRINT(FW_VERSION_MIN);
+  DEBUG_PRINT(".");
+  DEBUG_PRINTLN(FW_VERSION_PATCH);
+  DEBUG_PRINT_BUFFER("API: Sending confirmInfo", message, size);
+  
   _hal->packetSerial->send(message, sizeof(message));
   _apiTxTrafficIndication();
 }

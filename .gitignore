@@ -5,3 +5,5 @@ __pycache__/
 *.py[cod]
 include/version.h
 src/CMakeLists.txt
+refdes/
+ayab_test_log.txt
