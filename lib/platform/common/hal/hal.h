@@ -49,8 +49,12 @@ namespace hardwareAbstraction {
 
         virtual bool detect(uint8_t device) = 0;
         virtual uint8_t read(uint8_t device, uint8_t address) = 0;
-        virtual void write(uint8_t device, uint8_t value) = 0;   
-        virtual void write(uint8_t device, uint8_t address, uint8_t value) = 0;   
+        virtual void write(uint8_t device, uint8_t value) = 0;
+        virtual void write(uint8_t device, uint8_t address, uint8_t value) = 0;
+        
+        // 16-bit register operations for devices like ADS1015
+        virtual uint16_t read16(uint8_t device, uint8_t address) = 0;
+        virtual void write16(uint8_t device, uint8_t address, uint16_t value) = 0;
     };
 
     class HalInterface {

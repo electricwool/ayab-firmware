@@ -167,6 +167,16 @@
         "EOL_PIN_R_S": 14,   // GP14
         "EOL_PIN_L_N": 13,   // GP13
         "EOL_PIN_L_S": 12    // GP12
+      },
+      "ADS1015": {
+        "ADS1015_I2C_ADDR": "0x48",     // I2C address (ADDR pin to GND)
+        "ADS1015_ALERT_PIN": 11,         // GP11 - ALERT/RDY pin
+        "ADS1015_RIGHT_CHANNEL": 0,      // Differential pair: AIN0-AIN1 (pin 4-5)
+        "ADS1015_LEFT_CHANNEL": 2,       // Differential pair: AIN2-AIN3 (pin 6-7)
+        "ADS1015_LEFT_THRESHOLD_LOW": "0.10",   // Volts (South pole detection)
+        "ADS1015_LEFT_THRESHOLD_HIGH": "3.30",   // Volts (North pole detection)
+        "ADS1015_RIGHT_THRESHOLD_LOW": "0.10",  // Volts (South pole detection)
+        "ADS1015_RIGHT_THRESHOLD_HIGH": "3.30"   // Volts (North pole detection)
       }
     }
   }

@@ -70,5 +70,25 @@ void I2c::write(uint8_t device, uint8_t address, uint8_t value) {
   ::i2c_write(value);
   ::i2c_stop();
 }
+
+uint16_t I2c::read16(uint8_t device, uint8_t address) {
+  uint16_t value;
+  ::i2c_start((device << 1) | I2C_WRITE);
+  ::i2c_write(address);
+  ::i2c_rep_start((device << 1) | I2C_READ);
+  uint8_t msb = ::i2c_read(false);  // Read MSB, send ACK
+  uint8_t lsb = ::i2c_read(true);   // Read LSB, send NACK (last byte)
+  ::i2c_stop();
+  value = (static_cast<uint16_t>(msb) << 8) | lsb;
+  return value;
+}
+
+void I2c::write16(uint8_t device, uint8_t address, uint16_t value) {
+  ::i2c_start((device << 1) | I2C_WRITE);
+  ::i2c_write(address);
+  ::i2c_write(static_cast<uint8_t>(value >> 8));  // MSB first
+  ::i2c_write(static_cast<uint8_t>(value & 0xFF)); // LSB second
+  ::i2c_stop();
+}
 }  // namespace hardwareAbstraction
 #endif // ARDUINO_ARCH_AVR

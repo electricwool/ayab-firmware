@@ -62,6 +62,33 @@ with open("include/version.h", "w") as text_file:
     text_file.write("constexpr uint8_t FW_VERSION_PATCH = {0}U;\n".format(fw_patch))
     text_file.write("constexpr char  FW_VERSION_SUFFIX[] = \"{0}\";\n".format(fw_suffix))
 
+# Convert voltage to ADS1015 12-bit value
+def voltage_to_ads1015(voltage_str, gain_range=6.144):
+    """
+    Convert human-readable voltage string to ADS1015 12-bit value.
+    
+    Args:
+        voltage_str: Voltage as string (e.g., "2.50", "-1.25")
+        gain_range: Full-scale range in volts (default 6.144V for 2/3x gain)
+    
+    Returns:
+        12-bit signed integer value for ADS1015 (left-aligned in 16-bit)
+    """
+    try:
+        voltage = float(voltage_str)
+        # ADS1015 is 12-bit: range is -2048 to +2047
+        # But values are left-aligned in 16-bit registers (shifted left by 4)
+        # Calculate the 12-bit value
+        value_12bit = int((voltage / gain_range) * 2048.0)
+        # Clamp to 12-bit signed range
+        value_12bit = max(-2048, min(2047, value_12bit))
+        # Left-align: shift left by 4 bits for 16-bit register
+        value_16bit = value_12bit << 4
+        return value_16bit
+    except (ValueError, TypeError):
+        print(f"Warning: Could not convert voltage '{voltage_str}' to ADS1015 value")
+        return 0
+
 # Generate pin definitions from JSON
 def generate_pin_definitions():
     # Get the current build environment name
@@ -99,22 +126,24 @@ def generate_pin_definitions():
     # Flatten EOL_SENSORS nested structure
     # Supports either SIMPLE (EOL_R_PIN, EOL_L_PIN, EOL_R_L_PIN, EOL_R_DETECT_PIN)
     # or DUAL (EOL_PIN_R_N, EOL_PIN_R_S, EOL_PIN_L_N, EOL_PIN_L_S)
+    # or ADS1015 (ADS1015_I2C_ADDR, ADS1015_ALERT_PIN, channel configs, voltage thresholds)
     # At least one configuration must have all pins defined
     if "EOL_SENSORS" in pins:
         eol_sensors = pins["EOL_SENSORS"]
         
         # Validate that at least one config is present
-        if "SIMPLE" not in eol_sensors and "DUAL" not in eol_sensors:
+        if "SIMPLE" not in eol_sensors and "DUAL" not in eol_sensors and "ADS1015" not in eol_sensors:
             print("\n" + "="*70)
-            print("ERROR: EOL_SENSORS must contain at least SIMPLE or DUAL configuration")
+            print("ERROR: EOL_SENSORS must contain at least SIMPLE, DUAL, or ADS1015 configuration")
             print("="*70)
             print(f"Environment: {env_name}")
             print("="*70 + "\n")
-            raise ValueError("EOL_SENSORS must contain at least SIMPLE or DUAL configuration")
+            raise ValueError("EOL_SENSORS must contain at least SIMPLE, DUAL, or ADS1015 configuration")
         
         # Check which sensor config is complete
         simple_complete = False
         dual_complete = False
+        ads1015_complete = False
         
         if "SIMPLE" in eol_sensors:
             simple_pins = eol_sensors["SIMPLE"]
@@ -134,16 +163,31 @@ def generate_pin_definitions():
                 for pin_name in required_dual
             )
         
+        if "ADS1015" in eol_sensors:
+            ads1015_pins = eol_sensors["ADS1015"]
+            # ADS1015 is complete if it has required fields
+            required_ads1015 = [
+                "ADS1015_I2C_ADDR", "ADS1015_ALERT_PIN",
+                "ADS1015_LEFT_CHANNEL", "ADS1015_RIGHT_CHANNEL",
+                "ADS1015_LEFT_THRESHOLD_LOW", "ADS1015_LEFT_THRESHOLD_HIGH",
+                "ADS1015_RIGHT_THRESHOLD_LOW", "ADS1015_RIGHT_THRESHOLD_HIGH"
+            ]
+            ads1015_complete = all(
+                pin_name in ads1015_pins and ads1015_pins[pin_name] is not None and ads1015_pins[pin_name] != ""
+                for pin_name in required_ads1015
+            )
+        
         # At least one section must be complete
-        if not simple_complete and not dual_complete:
+        if not simple_complete and not dual_complete and not ads1015_complete:
             print("\n" + "="*70)
-            print("ERROR: At least one EOL_SENSORS section must define all pins")
+            print("ERROR: At least one EOL_SENSORS section must define all required fields")
             print("="*70)
             print(f"Environment: {env_name}")
             print("SIMPLE section requires: EOL_R_PIN, EOL_L_PIN, EOL_R_L_PIN, EOL_R_DETECT_PIN")
             print("DUAL section requires: EOL_PIN_R_N, EOL_PIN_R_S, EOL_PIN_L_N, EOL_PIN_L_S")
+            print("ADS1015 section requires: ADS1015_I2C_ADDR, ADS1015_ALERT_PIN, channels, thresholds")
             print("="*70 + "\n")
-            raise ValueError("At least one EOL_SENSORS section must have all pins defined")
+            raise ValueError("At least one EOL_SENSORS section must have all required fields defined")
         
         # Flatten SIMPLE pins to top level (only non-null values)
         if "SIMPLE" in eol_sensors:
@@ -165,6 +209,32 @@ def generate_pin_definitions():
                 if "EOL_L_PIN" not in pins:
                     pins["EOL_L_PIN"] = eol_sensors["DUAL"]["EOL_PIN_L_N"]
         
+        # Process ADS1015 configuration and convert voltage thresholds
+        if "ADS1015" in eol_sensors and ads1015_complete:
+            ads1015_config = eol_sensors["ADS1015"]
+            
+            # Copy non-threshold values directly
+            for key in ["ADS1015_I2C_ADDR", "ADS1015_ALERT_PIN",
+                       "ADS1015_LEFT_CHANNEL", "ADS1015_RIGHT_CHANNEL"]:
+                if key in ads1015_config:
+                    pins[key] = ads1015_config[key]
+            
+            # Convert voltage thresholds to ADS1015 binary values
+            # Using 2/3x gain: ±6.144V range
+            threshold_keys = [
+                "ADS1015_LEFT_THRESHOLD_LOW",
+                "ADS1015_LEFT_THRESHOLD_HIGH",
+                "ADS1015_RIGHT_THRESHOLD_LOW",
+                "ADS1015_RIGHT_THRESHOLD_HIGH"
+            ]
+            
+            for key in threshold_keys:
+                if key in ads1015_config:
+                    voltage_str = ads1015_config[key]
+                    binary_value = voltage_to_ads1015(voltage_str, gain_range=6.144)
+                    pins[key] = binary_value
+                    print(f"  Converted {key}: {voltage_str}V -> {binary_value} (0x{binary_value:04X})")
+        
         # Remove the nested structure from pins dict to avoid processing it as a pin
         del pins["EOL_SENSORS"]
     
@@ -184,6 +254,7 @@ def generate_pin_definitions():
             f.write("#define USE_WS2812_STATUS_LED\n\n")
         
         # Generate USE_DUAL_HALL_SENSOR macro if DUAL config is complete
+        # Generate USE_ADS1015_HALL_SENSOR macro if ADS1015 config is complete
         # This will be undefined in the outer scope, so the check needs to be done here
         if "EOL_SENSORS" in pin_defs[env_name]:
             eol_sensors = pin_defs[env_name]["EOL_SENSORS"]
@@ -196,6 +267,21 @@ def generate_pin_definitions():
                 )
                 if dual_complete:
                     f.write("#define USE_DUAL_HALL_SENSOR\n\n")
+            
+            if "ADS1015" in eol_sensors:
+                ads1015_pins = eol_sensors["ADS1015"]
+                required_ads1015 = [
+                    "ADS1015_I2C_ADDR", "ADS1015_ALERT_PIN",
+                    "ADS1015_LEFT_CHANNEL", "ADS1015_RIGHT_CHANNEL",
+                    "ADS1015_LEFT_THRESHOLD_LOW", "ADS1015_LEFT_THRESHOLD_HIGH",
+                    "ADS1015_RIGHT_THRESHOLD_LOW", "ADS1015_RIGHT_THRESHOLD_HIGH"
+                ]
+                ads1015_complete = all(
+                    pin_name in ads1015_pins and ads1015_pins[pin_name] is not None and ads1015_pins[pin_name] != ""
+                    for pin_name in required_ads1015
+                )
+                if ads1015_complete:
+                    f.write("#define USE_ADS1015_HALL_SENSOR\n\n")
         
         # List of optional pins that should be wrapped in #ifdef
         optional_pins = {
@@ -231,6 +317,12 @@ def generate_pin_definitions():
             print("="*70 + "\n")
             raise ValueError(f"Missing required pin values: {', '.join(sorted(missing_required_pins))}")
         
+        # List of ADS1015 threshold pins that should be int16_t
+        ads1015_threshold_pins = {
+            "ADS1015_LEFT_THRESHOLD_LOW", "ADS1015_LEFT_THRESHOLD_HIGH",
+            "ADS1015_RIGHT_THRESHOLD_LOW", "ADS1015_RIGHT_THRESHOLD_HIGH"
+        }
+        
         for pin_name, pin_value in pins.items():
             # Skip WS2812 as it's handled specially above
             if pin_name == "WS2812":
@@ -243,6 +335,9 @@ def generate_pin_definitions():
             # Generate the definition
             if isinstance(pin_value, str):
                 f.write(f"#define {pin_name} {pin_value}\n")
+            elif pin_name in ads1015_threshold_pins:
+                # ADS1015 thresholds are 16-bit signed values
+                f.write(f"constexpr int16_t {pin_name} = {pin_value};\n")
             else:
                 f.write(f"constexpr uint8_t {pin_name} = {pin_value}U;\n")
         
