@@ -23,7 +23,6 @@
     },
     "SDA_PORT": "PORTC",
     "SDA_PIN": 4,
-    "SCL_PORT": "PORTC",
     "SCL_PIN": 5
   },
   "mega2560": {
@@ -49,7 +48,6 @@
     },
     "SDA_PORT": "PORTF",
     "SDA_PIN": 4,
-    "SCL_PORT": "PORTF",
     "SCL_PIN": 5,
     "WS2812": 0              // optional
   },
